@@ -24,23 +24,13 @@
     // IMPORTANT: Make sure these selectors match the actual elements on your dating site.
 
     // CSS Selector for the customer's latest message (based on your provided HTML)
-    const CUSTOMER_MESSAGE_SELECTOR = 'p[style=\"word-wrap: break-word\"]';
-
-    // CSS Selector for the dating site's input text area where you type replies
-    const REPLY_INPUT_SELECTOR = '#reply-textarea'; // Based on your previous...
-    // The rest of your script content goes here...
-
-    // --- CONFIGURATION ---
-    // IMPORTANT: Make sure these selectors match the actual elements on your dating site.
-
-    // CSS Selector for the customer's latest message (based on your provided HTML)
-    const CUSTOMER_MESSAGE_SELECTOR = 'p[style=\"word-wrap: break-word\"]';
+    const CUSTOMER_MESSAGE_SELECTOR = 'p[style="word-wrap: break-word"]';
 
     // CSS Selector for the dating site's input text area where you type replies
     const REPLY_INPUT_SELECTOR = '#reply-textarea'; // Based on your previous message, this is the most likely ID
 
     // CSS Selector for the send button (based on your provided HTML)
-    const SEND_BUTTON_SELECTOR = 'button[onclick=\"sendMessage()\"]';
+    const SEND_BUTTON_SELECTOR = 'button[onclick="sendMessage()"]';
 
     // CSS Selector for the container holding messages (to observe new messages)
     const MESSAGE_CONTAINER_SELECTOR = '.chat-messages-container'; // Common selector for chat message areas
@@ -73,10 +63,10 @@
     let starrCharacterNameInput;
     let starrCharacterBioInput;
     let starrCharacterExamplesInput;
-    darkModeToggle;
-    sendButtonGlowToggle;
-    voiceReplyToggle;
-    themeSwitcher;
+    let darkModeToggle;
+    let sendButtonGlowToggle;
+    let voiceReplyToggle;
+    let themeSwitcher;
 
     // --- State Variables ---
     let chatLog = [];
@@ -969,36 +959,6 @@
         starrCharacterNameInput.value = GM_getValue('starr_character_name', 'Starr');
         starrCharacterBioInput.value = GM_getValue('starr_character_bio', 'A vibrant, real human being mimicking most human qualities; extremely naughty, dirty, flirty, sassy, playful, witty, charming, kind, cheeky, and passionately affectionate. Responds directly and without filters.');
         starrCharacterExamplesInput.value = GM_getValue('starr_character_examples', '');
-
-        // Apply saved UI preferences on load
-        function applySavedUIPreferences() {
-            const savedDarkMode = GM_getValue('starr_dark_mode', false);
-            darkModeToggle.checked = savedDarkMode;
-            if (savedDarkMode) {
-                document.documentElement.classList.add("dark-mode");
-            }
-
-            const savedSendButtonGlow = GM_getValue('starr_send_button_glow', true); // Default to true
-            sendButtonGlowToggle.checked = savedSendButtonGlow;
-            if (savedSendButtonGlow) {
-                starrSendButton.classList.add("glow");
-            } else {
-                starrSendButton.classList.remove("glow");
-            }
-
-            const savedVoiceReply = GM_getValue('starr_voice_reply', true); // Default to true
-            voiceReplyToggle.checked = savedVoiceReply;
-
-            const savedTheme = GM_getValue('starr_current_theme', 'bubblegum'); // Default to bubblegum
-            document.documentElement.className = ''; // Clear existing themes
-            if (savedTheme !== 'bubblegum') {
-                document.documentElement.classList.add(`theme-${savedTheme}`);
-            }
-            // Re-apply dark mode if it was enabled
-            if (savedDarkMode) {
-                document.documentElement.classList.add("dark-mode");
-            }
-        }
     }
 
 
