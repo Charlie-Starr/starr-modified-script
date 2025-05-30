@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name          UPPY'S originalvoiceAUTOVERSION 1.0 - Starr Enhanced (Naughty Edition) - Modified
 // @namespace     http://tampermonkey.net/
-// @version       1.5 // Increased version number for changes and new UI features
+// @version       1.6 // Increased version number for changes and new UI features, and correct raw URL
 // @description   Starr: A vibrant, real human being mimicking most human qualities; extremely naughty, dirty, flirty, sassy, playful, witty, charming, kind, cheeky, and passionately affectionate. Enhanced with automatic API key re-prompting, Cone ID access, clickable notifications, and a larger UI. Now with Dark Mode, Animated Send Button, and Theme Switcher!
 // @match         *://*/*
-// @match         https://github.com/Charlie-Starr/starr-modified-script/raw/refs/heads/main/STARRMAIN-user.js
-// @downloadURL   https://github.com/Charlie-Starr/starr-modified-script/raw/refs/heads/main/STARRMAIN-user.js
-// @updateURL     https://github.com/Charlie-Starr/starr-modified-script/raw/refs/heads/main/STARRMAIN-user.js
+// @match         https://raw.githubusercontent.com/Charlie-Starr/starr-modified-script/main/STARRMAIN-user.js
+// @downloadURL   https://raw.githubusercontent.com/Charlie-Starr/starr-modified-script/main/STARRMAIN-user.js
+// @updateURL     https://raw.githubusercontent.com/Charlie-Starr/starr-modified-script/main/STARRMAIN-user.js
 // @grant         GM_setValue
 // @grant         GM_getValue
 // @grant         GM_notification
@@ -73,10 +73,10 @@
     let starrCharacterNameInput;
     let starrCharacterBioInput;
     let starrCharacterExamplesInput;
-    let darkModeToggle;
-    let sendButtonGlowToggle;
-    let voiceReplyToggle;
-    let themeSwitcher;
+    darkModeToggle;
+    sendButtonGlowToggle;
+    voiceReplyToggle;
+    themeSwitcher;
 
     // --- State Variables ---
     let chatLog = [];
