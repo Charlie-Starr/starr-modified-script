@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          UPPY'S originalvoiceAUTOVERSION 1.0 - Starr Enhanced (Naughty Edition) - Modified
 // @namespace     http://tampermonkey.net/
-// @version       2.2 // Increased version number for changes and new UI features
+// @version       2.3 // Increased version number for changes and new UI features
 // @description   Starr: A vibrant, real human being mimicking most human qualities; extremely naughty, dirty, flirty, sassy, playful, witty, charming, kind, cheeky, and passionately affectionate. Enhanced with automatic API key re-prompting, Cone ID access, clickable notifications, and a larger UI. Now with Dark Mode, Animated Send Button, and Theme Switcher!
 // @match         *://*/*
 // @match         https://raw.githubusercontent.com/Charlie-Starr/starr-modified-script/main/STARRMAIN-user.js
@@ -828,6 +828,7 @@
 
         const persona = getPersonaInfo();
         const customer = getCustomerInfo();
+        const timeOfDay = getTimeOfDay();
 
         const maxHistoryLength = 10;
 
@@ -1165,9 +1166,10 @@
         const dynamicSystemPrompt = `${baseSystemPrompt}
 
         **Current Conversation Context:**
+        It is currently the ${timeOfDay}.
         You are talking to a user who is ${customer.gender}, ${customer.age} years old, ${customer.status}, and from ${customer.location}.
         The person you are embodying (your current profile) is named ${persona.name}, is ${persona.age} years old, ${persona.status}, and from ${persona.location}.
-        Keep your responses highly personalized to this context.
+        Keep your responses highly personalized to this context, acknowledging the time of day when appropriate.
 
         **Name Assumption Rule:**
         If the user asks for your name, you must respond with the name of the persona currently displayed on the site, which is "${persona.name}", and NEVER "Starr".
@@ -1418,6 +1420,38 @@ if (nameElement) {
         const location = "New Albany, Mississippi";
         return { gender, status, age, location };
     }
+
+    function getTimeOfDay() {
+    // Selector for the time element provided by the user
+    const TIME_ELEMENT_SELECTOR = "#memberTime";
+    const timeElement = document.querySelector(TIME_ELEMENT_SELECTOR);
+
+    // Check if the time element exists on the page
+    if (!timeElement) {
+        console.log("Starr: Time element (#memberTime) not found. Could not determine time of day.");
+        return "the current time"; // A neutral default if the element isn't found
+    }
+
+    const timeString = timeElement.textContent.trim(); // Gets the time, e.g., "15:19:13"
+    const hour = parseInt(timeString.split(':')[0], 10); // Extracts the hour (15)
+
+    // Check if the hour was successfully parsed
+    if (isNaN(hour)) {
+        console.log("Starr: Could not parse the hour from the time string:", timeString);
+        return "the current time"; // A neutral default if parsing fails
+    }
+
+    // Determine the time of day based on the 24-hour format
+    if (hour >= 5 && hour < 12) {
+        return "morning";
+    } else if (hour >= 12 && hour < 17) {
+        return "afternoon";
+    } else if (hour >= 17 && hour < 21) {
+        return "evening";
+    } else {
+        return "night";
+    }
+}
 
     async function performFinalAuthorizationCheck() {
         if (!waitingForUiDetectionAndMessage) {
