@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          UPPY'S originalvoiceAUTOVERSION 1.0 - Starr Enhanced (Naughty Edition) - Modified
 // @namespace     http://tampermonkey.net/
-// @version       2.3 // Increased version number for changes and new UI features
+// @version       2.4 // Increased version number for changes and new UI features
 // @description   Starr: A vibrant, real human being mimicking most human qualities; extremely naughty, dirty, flirty, sassy, playful, witty, charming, kind, cheeky, and passionately affectionate. Enhanced with automatic API key re-prompting, Cone ID access, clickable notifications, and a larger UI. Now with Dark Mode, Animated Send Button, and Theme Switcher!
 // @match         *://*/*
 // @match         https://raw.githubusercontent.com/Charlie-Starr/starr-modified-script/main/STARRMAIN-user.js
@@ -89,6 +89,11 @@
             justify-content: space-between;
             color: var(--starr-text-color); /* Themed */
             transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .starr-reply.selected-reply {
+            border-color: var(--starr-send-button-bg); /* Use theme color for highlight */
+            box-shadow: 0 0 5px var(--starr-send-button-bg);
         }
 
         #starr-popup h3 {
@@ -515,6 +520,7 @@
 
     let conversationHistory = [];
     let lastProcessedMessage = '';
+    let selectedReplyIndex = -1; // Tracks the currently highlighted reply for keyboard navigation
 
     // Central function to update the popup's UI based on current state
     function updatePopupUI() {
@@ -658,6 +664,7 @@
         starrInput.value = "";
         starrResponses.innerHTML = "";
         conversationHistory = [];
+        selectedReplyIndex = -1;
     }
 
     button.addEventListener("click", initializeStarrPopup);
@@ -1189,7 +1196,7 @@
             messages: messagesToSend,
             temperature: 1.0,
             n: 3,
-            max_tokens: 1000,
+            max_tokens: 2000,
             top_p: 1.0
         };
 
@@ -1689,5 +1696,104 @@ if (nameElement) {
 
     // Call this once on script load to apply any saved preferences
     applySavedUIPreferences();
+
+    // --- HOTKEY LOGIC ---
+
+    // --- HOTKEY LOGIC (v2 - with Global Toggle) ---
+    document.addEventListener('keydown', (event) => {
+        const isCtrl = event.ctrlKey || event.metaKey; // For both Win/Mac
+
+        // --- GLOBAL HOTKEY: Toggle Starr UI (Open/Close) ---
+        // This hotkey works even when the popup is closed.
+        if (isCtrl && event.shiftKey && event.key.toLowerCase() === 's') {
+            event.preventDefault();
+            // If popup is hidden, click the main button to initialize and show it.
+            if (popup.style.display === 'none' || popup.style.getPropertyValue('display') === 'none') {
+                button.click();
+            } else {
+                // If popup is visible, click the close button.
+                document.getElementById('starr-close').click();
+            }
+            return; // Stop further execution
+        }
+
+        // --- The rest of the hotkeys only work when the popup is visible ---
+        if (popup.style.display === 'none' || popup.style.getPropertyValue('display') === 'none') {
+            return;
+        }
+
+        // --- Regenerate: Ctrl + R ---
+        if (isCtrl && event.key.toLowerCase() === 'r') {
+            event.preventDefault();
+            document.getElementById('starr-regenerate').click();
+            return;
+        }
+
+        // --- Force New API Key: Ctrl + Shift + K ---
+        if (isCtrl && event.shiftKey && event.key.toLowerCase() === 'k') {
+            event.preventDefault();
+            document.getElementById('starr-force-key').click();
+            return;
+        }
+
+        // --- Toggle Settings Panel: T ---
+        if (event.key.toLowerCase() === 't' && document.activeElement !== starrInput) {
+             event.preventDefault();
+             starrSettingsButton.click();
+             return;
+        }
+
+        // --- Close Popup: Escape ---
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            document.getElementById('starr-close').click();
+            return;
+        }
+
+        const replies = starrResponses.querySelectorAll('.starr-reply');
+
+        // --- Navigate Replies: ArrowUp and ArrowDown ---
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (replies.length === 0) return;
+
+            // Remove highlight from the old reply
+            if (selectedReplyIndex > -1 && replies[selectedReplyIndex]) {
+                replies[selectedReplyIndex].classList.remove('selected-reply');
+            }
+
+            if (event.key === 'ArrowDown') {
+                selectedReplyIndex++;
+                if (selectedReplyIndex >= replies.length) {
+                    selectedReplyIndex = 0; // Wrap around to top
+                }
+            } else if (event.key === 'ArrowUp') {
+                selectedReplyIndex--;
+                if (selectedReplyIndex < 0) {
+                    selectedReplyIndex = replies.length - 1; // Wrap around to bottom
+                }
+            }
+
+            // Highlight the new reply and scroll to it
+            const newSelectedReply = replies[selectedReplyIndex];
+            newSelectedReply.classList.add('selected-reply');
+            newSelectedReply.scrollIntoView({ block: 'nearest' });
+            return;
+        }
+
+        // --- Send or Select: Enter ---
+        if (event.key === 'Enter') {
+            // If a reply is highlighted, select it
+            if (selectedReplyIndex > -1 && replies[selectedReplyIndex]) {
+                event.preventDefault();
+                replies[selectedReplyIndex].click();
+            }
+            // If typing in the main input, send the message
+            else if (document.activeElement === starrInput && !event.shiftKey) {
+                event.preventDefault();
+                document.getElementById('starr-send').click();
+            }
+        }
+    });
 
 })();
