@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          UPPY'S originalvoiceAUTOVERSION 1.0 - Starr Enhanced (Naughty Edition) - Modified
 // @namespace     http://tampermonkey.net/
-// @version       2.5 // Increased version number for changes and new UI features
+// @version       2.6 // Increased version number for changes and new UI features
 // @description   Starr: A vibrant, real human being mimicking most human qualities; extremely naughty, dirty, flirty, sassy, playful, witty, charming, kind, cheeky, and passionately affectionate. Enhanced with automatic API key re-prompting, Cone ID access, clickable notifications, and a larger UI. Now with Dark Mode, Animated Send Button, and Theme Switcher!
 // @match         *://*/*
 // @match         https://raw.githubusercontent.com/Charlie-Starr/starr-modified-script/main/STARRMAIN-user.js
@@ -1200,7 +1200,7 @@
         starrResponses.innerHTML = "";
 
         const body = {
-            model: "gpt-4o", // Changed model to gpt-4o
+            model: "gpt-4o-mini", // Changed model to gpt-4o-mini
             messages: messagesToSend,
             temperature: 1.0,
             n: 3,
