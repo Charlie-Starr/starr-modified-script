@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          UPPY'S originalvoiceAUTOVERSION 1.0 - Starr Enhanced (Naughty Edition) - Modified
 // @namespace     http://tampermonkey.net/
-// @version       2.8 // Integrated robust female character enforcement
+// @version       2.9 
 // @description   Starr: A real HUMAN WOMAN (NOT A MAN). Enhanced with automatic API key re-prompting, Cone ID access, clickable notifications, and a larger UI. Now with Dark Mode, Animated Send Button, and Theme Switcher!
 // @match         *://*/*
 // @match         https://raw.githubusercontent.com/Charlie-Starr/starr-modified-script/main/STARRMAIN-user.js
@@ -963,26 +963,36 @@
 
         console.log("Starr: Sending request to OpenAI API with model:", body.model);
         try {
-            const res = await fetch("https://api.openai.com/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
-                body: JSON.stringify(body)
+            const response = await new Promise((resolve, reject) => {
+                GM_xmlhttpRequest({
+                    method: "POST",
+                    url: "https://api.openai.com/v1/chat/completions",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    data: JSON.stringify(body), // For GM_xmlhttpRequest, we use 'data' instead of 'body'
+                    responseType: 'json',
+                    onload: (res) => {
+                        if (res.status >= 200 && res.status < 300) {
+                            resolve(res.response);
+                        } else {
+                            console.error("Starr: OpenAI API Response Error (Status: " + res.status + "):", res.responseText);
+                            console.log("Starr: Received non-OK API response. Clearing stored key to force re-prompt on next attempt.");
+                            GM_setValue("openai_api_key", null);
+                            reject(new Error(`OpenAI API Error: ${res.responseText}`));
+                        }
+                    },
+                    onerror: (err) => {
+                        console.error("Starr: GM_xmlhttpRequest network error:", err);
+                        reject(new Error("Network error during API call."));
+                    }
+                });
             });
 
-            if (!res.ok) {
-                const err = await res.text();
-                console.error("Starr: OpenAI API Response Error (Status: " + res.status + "):", err);
+            const data = response; // The response data is already parsed JSON            const choices = data.choices || [];
+            const choices = data.choices || []; // <--- THIS NA THE LINE WEY YOU GO ADD!!
 
-                console.log("Starr: Received non-OK API response. Clearing stored key to force re-prompt on next attempt.");
-                GM_setValue("openai_api_key", null);
-                throw new Error(`OpenAI API Error: ${err}`);
-            }
-
-            const data = await res.json();
-            const choices = data.choices || [];
             console.log("Starr: Successfully received response from OpenAI.", data);
 
             starrResponses.innerHTML = "";
